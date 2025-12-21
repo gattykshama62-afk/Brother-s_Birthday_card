@@ -10,7 +10,7 @@
   margin:0;
   padding:0;
   box-sizing:border-box;
-  font-family:'Georgia', serif;
+  font-family: 'Georgia', serif;
 }
 
 /* INTRO */
@@ -37,7 +37,7 @@
   margin:10px 0 20px;
 }
 
-/* TIMER */
+/* Timer */
 #timer{
   font-size:64px;
   animation:pulse 1s infinite;
@@ -48,7 +48,7 @@
   to{opacity:1}
 }
 
-/* BUTTON */
+/* Button */
 #startBtn{
   display:none;
   padding:14px 40px;
@@ -79,28 +79,28 @@ video{
 .overlay{
   position:fixed;
   inset:0;
-  background:rgba(0,0,0,0.55);
+  background:rgba(0,0,0,0.5);
   z-index:-1;
 }
 
-/* POEM */
+/* POEM TEXT */
 #poem{
   position:absolute;
   top:50%;
   left:50%;
   transform:translate(-50%,-50%);
   width:90%;
-  max-width:900px;
+  max-width:800px;
   text-align:center;
   color:#f5f5f5;
-  font-size:30px;
-  line-height:1.7;
+  font-size:28px;
+  line-height:1.6;
   opacity:0;
-  transition:opacity 1.4s ease;
-  text-shadow:0 0 18px rgba(255,255,255,0.45);
+  transition:opacity 1.2s ease;
+  text-shadow:0 0 15px rgba(255,255,255,0.4);
 }
 
-/* STARS */
+/* Stars */
 .star{
   position:absolute;
   background:white;
@@ -120,7 +120,7 @@ video{
 <!-- INTRO -->
 <div id="intro">
   <div id="hello">Hello Bro ⭐</div>
-  <div id="subtitle">A quiet gift from the stars ✨</div>
+  <div id="subtitle">A quiet gift from Stars ✨</div>
   <div id="timer">3</div>
   <button id="startBtn" onclick="startMagic()">Tap</button>
 </div>
@@ -140,28 +140,18 @@ const lines = [
   "Long ago, in the vast expanse of the cosmos,",
   "a fragile planet spun alone beneath violent skies.",
   "Storms raged, meteors threatened, darkness crept in.",
-  "Yet unseen, A Guardians bent his paths for its safety.",
+  "Yet unseen, A guardian bent it's paths for its safety.",
   "As comets struck, he absorbed the blows.",
-  "As chaos grew, he became the gravity.",
+  "As chaos grew, he became my gravity.",
   "When darkness came, he shone like a constellation.",
   "That planet is me.",
-  "And you, my chosen Brother, my Universe of protection.",
-  "Happy Birthday to you, my universe’s shield.",
-  "Stay happy, be successful, and may your dreams find you.",
-  "A Brother, not by blood, But by the stars."
+  "And you… my chosen brother, my universe of protection.",
+  "Happy Birthday to you, my universe’s shield",
+  "Stay happy, be successful, and may your dreams find you",
+  "A brother, not by blood, but by the stars."
 ];
 
 const poemDiv = document.getElementById("poem");
-const intro = document.getElementById("intro");
-const main = document.getElementById("main");
-
-/* REMOVE EMOJIS FOR VOICE */
-function removeEmojis(text){
-  return text.replace(
-    /([\u2700-\u27BF]|[\uE000-\uF8FF]|[\uD83C-\uDBFF\uDC00-\uDFFF])/g,
-    ""
-  );
-}
 
 /* TIMER */
 let count = 3;
@@ -178,33 +168,19 @@ const t = setInterval(()=>{
   }
 },1000);
 
-/* BACKGROUND MUSIC */
+/* MUSIC */
 const music = new Audio("bgmusic.mp3");
 music.loop = true;
 music.volume = 0.9;
 
-/* 🌸 SOFT FEMALE VOICE */
-let softFemaleVoice = null;
+/* FEMALE VOICE */
+let femaleVoice=null;
+speechSynthesis.onvoiceschanged=()=>{
+  femaleVoice = speechSynthesis.getVoices()
+    .find(v=>v.lang.includes("en") && v.name.toLowerCase().includes("female"))
+    || speechSynthesis.getVoices().find(v=>v.lang.includes("en"));
+};
 
-function loadVoices(){
-  const voices = speechSynthesis.getVoices();
-  softFemaleVoice =
-    voices.find(v =>
-      v.lang.startsWith("en") &&
-      (
-        v.name.includes("Google") ||
-        v.name.includes("Microsoft") ||
-        v.name.includes("Samantha") ||
-        v.name.includes("Karen") ||
-        v.name.includes("Female")
-      )
-    ) || voices.find(v => v.lang.startsWith("en"));
-}
-
-speechSynthesis.onvoiceschanged = loadVoices;
-loadVoices();
-
-/* START */
 function startMagic(){
   intro.style.display="none";
   main.style.display="block";
@@ -212,10 +188,9 @@ function startMagic(){
   playPoem();
 }
 
-/* 🎙️ SOFT, SLOW POEM */
+/* CINEMATIC POEM */
 function playPoem(){
   let index = 0;
-  speechSynthesis.cancel();
 
   function showLine(){
     if(index >= lines.length) return;
@@ -223,29 +198,20 @@ function playPoem(){
     poemDiv.innerText = lines[index];
     poemDiv.style.opacity = 1;
 
-    const utter = new SpeechSynthesisUtterance(
-      removeEmojis(lines[index])
-    );
+    const utter = new SpeechSynthesisUtterance(lines[index]);
+    utter.voice = femaleVoice;
+    utter.rate = 0.85;
+    utter.pitch = 1.15;
 
-    utter.voice = softFemaleVoice;
-    utter.rate = 0.72;   // slower, calm
-    utter.pitch = 1.02; // soft feminine tone
-    utter.volume = 1;
-
-    utter.onstart = () => {
-      music.volume = 0.55;
-    };
-
-    utter.onend = () => {
+    utter.onstart = ()=> music.volume = 0.6;
+    utter.onend = ()=>{
       poemDiv.style.opacity = 0;
       music.volume = 0.9;
       index++;
-      setTimeout(showLine, 2200); // gentle pause
+      setTimeout(showLine, 1200);
     };
 
-    setTimeout(() => {
-      speechSynthesis.speak(utter);
-    }, 600);
+    speechSynthesis.speak(utter);
   }
 
   showLine();
