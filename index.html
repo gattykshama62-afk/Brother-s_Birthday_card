@@ -58,13 +58,32 @@
 /* YOUTUBE BACKGROUND */
 .video-bg{
   position:fixed;
-  inset:0;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  overflow:hidden;
   z-index:-2;
 }
-.video-bg iframe{
+
+.video-wrapper{
+  position:absolute;
+  top:50%;
+  left:50%;
+  width:177.78vh;
+  height:100vh;
+  transform:translate(-50%, -50%);
+}
+
+.video-wrapper iframe{
+  position:absolute;
+  top:0;
+  left:0;
   width:100%;
   height:100%;
   pointer-events:none;
+  min-width:100%;
+  min-height:100%;
 }
 
 .overlay{
@@ -115,11 +134,14 @@
 <!-- MAIN -->
 <div id="main">
   <div class="video-bg">
-    <iframe
-      src="https://www.youtube.com/embed/sK8oJn1jKAw?autoplay=1&mute=1&loop=1&playlist=sK8oJn1jKAw&controls=0&modestbranding=1&playsinline=1"
-      frameborder="0"
-      allow="autoplay">
-    </iframe>
+    <div class="video-wrapper">
+      <iframe
+        src="https://www.youtube.com/embed/sK8oJn1jKAw?autoplay=1&mute=1&loop=1&playlist=sK8oJn1jKAw&controls=0&modestbranding=1&playsinline=1"
+        frameborder="0"
+        allow="autoplay; fullscreen"
+        allowfullscreen>
+      </iframe>
+    </div>
   </div>
 
   <div class="overlay"></div>
@@ -127,7 +149,7 @@
 </div>
 
 <script>
-/* POEM LINES (NO EMOJIS FOR SPEECH) */
+/* POEM LINES */
 const lines = [
   "Long ago, in the vast expanse of the cosmos,",
   "a fragile planet spun alone beneath violent skies.",
@@ -149,6 +171,8 @@ const poemDiv = document.getElementById("poem");
 let count=3;
 const timer=document.getElementById("timer");
 const btn=document.getElementById("startBtn");
+const intro=document.getElementById("intro");
+const main=document.getElementById("main");
 
 const t=setInterval(()=>{
   count--;
@@ -160,10 +184,10 @@ const t=setInterval(()=>{
   }
 },1000);
 
-/* MUSIC (FROM GITHUB) */
+/* MUSIC */
 const music=new Audio("bgmusic.mp3");
 music.loop=true;
-music.volume=0.9;
+music.volume=0.3; // Lower initial volume
 
 /* FEMALE VOICE */
 let femaleVoice=null;
@@ -176,6 +200,7 @@ speechSynthesis.onvoiceschanged=()=>{
 function startMagic(){
   intro.style.display="none";
   main.style.display="block";
+  // Music starts after tap
   music.play().catch(()=>{});
   playPoem();
 }
@@ -190,13 +215,14 @@ function playPoem(){
 
     const u=new SpeechSynthesisUtterance(lines[i]);
     u.voice=femaleVoice;
-    u.rate=0.85;
-    u.pitch=1.15;
+    u.rate=0.9;
+    u.pitch=1.0;
+    u.volume=0.6; // Medium volume
 
-    u.onstart=()=>music.volume=0.6;
+    u.onstart=()=>music.volume=0.15; // Lower music during speech
     u.onend=()=>{
       poemDiv.style.opacity=0;
-      music.volume=0.9;
+      music.volume=0.3; // Restore music volume
       i++;
       setTimeout(showLine,1200);
     };
