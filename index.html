@@ -10,7 +10,7 @@
   margin:0;
   padding:0;
   box-sizing:border-box;
-  font-family: 'Georgia', serif;
+  font-family:'Georgia', serif;
 }
 
 /* INTRO */
@@ -37,7 +37,7 @@
   margin:10px 0 20px;
 }
 
-/* Timer */
+/* TIMER */
 #timer{
   font-size:64px;
   animation:pulse 1s infinite;
@@ -48,7 +48,7 @@
   to{opacity:1}
 }
 
-/* Button */
+/* BUTTON */
 #startBtn{
   display:none;
   padding:14px 40px;
@@ -83,7 +83,7 @@ video{
   z-index:-1;
 }
 
-/* POEM TEXT */
+/* POEM */
 #poem{
   position:absolute;
   top:50%;
@@ -100,7 +100,7 @@ video{
   text-shadow:0 0 18px rgba(255,255,255,0.45);
 }
 
-/* Stars */
+/* STARS */
 .star{
   position:absolute;
   background:white;
@@ -120,7 +120,7 @@ video{
 <!-- INTRO -->
 <div id="intro">
   <div id="hello">Hello Bro ⭐</div>
-  <div id="subtitle">A quiet gift from Stars ✨</div>
+  <div id="subtitle">A quiet gift from the stars ✨</div>
   <div id="timer">3</div>
   <button id="startBtn" onclick="startMagic()">Tap</button>
 </div>
@@ -145,9 +145,9 @@ const lines = [
   "As chaos grew, he became my gravity.",
   "When darkness came, he shone like a constellation.",
   "That planet is me.",
-  "And you… my chosen brother, my universe of protection.",
-  "Happy Birthday to you, my universe’s shield. 🤍",
-  "Stay happy, be successful, and may your dreams find you. ✨"
+  "And you, my chosen brother, my universe of protection.",
+  "Happy Birthday to you, my universe’s shield.",
+  "Stay happy, be successful, and may your dreams find you."
 ];
 
 const poemDiv = document.getElementById("poem");
@@ -177,22 +177,33 @@ const t = setInterval(()=>{
   }
 },1000);
 
-/* MUSIC */
+/* BACKGROUND MUSIC */
 const music = new Audio("bgmusic.mp3");
 music.loop = true;
 music.volume = 0.9;
 
-/* FEMALE VOICE */
-let femaleVoice=null;
-speechSynthesis.onvoiceschanged=()=>{
-  femaleVoice =
-    speechSynthesis.getVoices().find(v =>
-      v.lang.includes("en") &&
-      (v.name.toLowerCase().includes("female") ||
-       v.name.toLowerCase().includes("google"))
-    ) || speechSynthesis.getVoices().find(v=>v.lang.includes("en"));
-};
+/* 🌸 SOFT FEMALE VOICE */
+let softFemaleVoice = null;
 
+function loadVoices(){
+  const voices = speechSynthesis.getVoices();
+  softFemaleVoice =
+    voices.find(v =>
+      v.lang.startsWith("en") &&
+      (
+        v.name.includes("Google") ||
+        v.name.includes("Microsoft") ||
+        v.name.includes("Samantha") ||
+        v.name.includes("Karen") ||
+        v.name.includes("Female")
+      )
+    ) || voices.find(v => v.lang.startsWith("en"));
+}
+
+speechSynthesis.onvoiceschanged = loadVoices;
+loadVoices();
+
+/* START */
 function startMagic(){
   intro.style.display="none";
   main.style.display="block";
@@ -200,9 +211,10 @@ function startMagic(){
   playPoem();
 }
 
-/* CINEMATIC POEM */
+/* 🎙️ SOFT, SLOW POEM */
 function playPoem(){
   let index = 0;
+  speechSynthesis.cancel();
 
   function showLine(){
     if(index >= lines.length) return;
@@ -210,23 +222,29 @@ function playPoem(){
     poemDiv.innerText = lines[index];
     poemDiv.style.opacity = 1;
 
-    const cleanText = removeEmojis(lines[index]);
-    const utter = new SpeechSynthesisUtterance(cleanText);
+    const utter = new SpeechSynthesisUtterance(
+      removeEmojis(lines[index])
+    );
 
-    utter.voice = femaleVoice;
-    utter.rate = 0.85;
-    utter.pitch = 1.15;
+    utter.voice = softFemaleVoice;
+    utter.rate = 0.72;   // slower, calm
+    utter.pitch = 1.02; // soft feminine tone
+    utter.volume = 1;
 
-    utter.onstart = ()=> music.volume = 0.6;
+    utter.onstart = () => {
+      music.volume = 0.55;
+    };
 
-    utter.onend = ()=>{
+    utter.onend = () => {
       poemDiv.style.opacity = 0;
       music.volume = 0.9;
       index++;
-      setTimeout(showLine, 1400);
+      setTimeout(showLine, 2200); // gentle pause
     };
 
-    speechSynthesis.speak(utter);
+    setTimeout(() => {
+      speechSynthesis.speak(utter);
+    }, 600);
   }
 
   showLine();
