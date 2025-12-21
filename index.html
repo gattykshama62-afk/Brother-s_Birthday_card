@@ -96,7 +96,7 @@ video{
   font-size:30px;
   line-height:1.7;
   opacity:0;
-  transition:opacity 1.4s ease;
+  transition:opacity 1.6s ease;
   text-shadow:0 0 18px rgba(255,255,255,0.45);
 }
 
@@ -105,7 +105,7 @@ video{
   position:absolute;
   background:white;
   border-radius:50%;
-  animation:twinkle 2s infinite alternate;
+  animation:twinkle 2.5s infinite alternate;
 }
 
 @keyframes twinkle{
@@ -135,26 +135,27 @@ video{
 </div>
 
 <script>
-/* POEM LINES */
+/* POEM */
 const lines = [
   "Long ago, in the vast expanse of the cosmos,",
   "a fragile planet spun alone beneath violent skies.",
   "Storms raged, meteors threatened, darkness crept in.",
-  "Yet unseen, guardians bent their paths for its safety.",
+  "Yet unseen, A guardian bent his paths for its safety.",
   "As comets struck, he absorbed the blows.",
-  "As chaos grew, he became my gravity.",
+  "As chaos grew, he became the gravity.",
   "When darkness came, he shone like a constellation.",
   "That planet is me.",
-  "And you, my chosen brother, my universe of protection.",
-  "Happy Birthday to you, my universe’s shield.",
-  "Stay happy, be successful, and may your dreams find you."
+  "And you, my chosen Brother, my universe of protection.",
+  "Happy Birthday to you, my Universe’s Shield.",
+  "Stay happy, be successful, and may your dreams find you.",
+  "A Brother, not by blood, but by the stars."
 ];
 
 const poemDiv = document.getElementById("poem");
 const intro = document.getElementById("intro");
 const main = document.getElementById("main");
 
-/* REMOVE EMOJIS FOR VOICE */
+/* REMOVE EMOJIS */
 function removeEmojis(text){
   return text.replace(
     /([\u2700-\u27BF]|[\uE000-\uF8FF]|[\uD83C-\uDBFF\uDC00-\uDFFF])/g,
@@ -177,24 +178,23 @@ const t = setInterval(()=>{
   }
 },1000);
 
-/* BACKGROUND MUSIC */
+/* MUSIC */
 const music = new Audio("bgmusic.mp3");
 music.loop = true;
-music.volume = 0.9;
+music.volume = 0.85;
 
-/* 🌸 SOFT FEMALE VOICE */
-let softFemaleVoice = null;
+/* 🌸 SOFTEST FEMALE VOICE */
+let softVoice = null;
 
 function loadVoices(){
   const voices = speechSynthesis.getVoices();
-  softFemaleVoice =
+  softVoice =
     voices.find(v =>
       v.lang.startsWith("en") &&
       (
+        v.name.includes("Samantha") ||
         v.name.includes("Google") ||
         v.name.includes("Microsoft") ||
-        v.name.includes("Samantha") ||
-        v.name.includes("Karen") ||
         v.name.includes("Female")
       )
     ) || voices.find(v => v.lang.startsWith("en"));
@@ -211,7 +211,7 @@ function startMagic(){
   playPoem();
 }
 
-/* 🎙️ SOFT, SLOW POEM */
+/* 🎙️ ULTRA-SOFT POEM */
 function playPoem(){
   let index = 0;
   speechSynthesis.cancel();
@@ -226,32 +226,34 @@ function playPoem(){
       removeEmojis(lines[index])
     );
 
-    utter.voice = softFemaleVoice;
-    utter.rate = 0.72;   // slower, calm
-    utter.pitch = 1.02; // soft feminine tone
-    utter.volume = 1;
+    utter.voice = softVoice;
+
+    /* MAXIMUM SOFTNESS */
+    utter.rate = 0.62;   // very slow
+    utter.pitch = 0.95; // warm & smooth
+    utter.volume = 0.9;
 
     utter.onstart = () => {
-      music.volume = 0.55;
+      music.volume = 0.5;
     };
 
     utter.onend = () => {
       poemDiv.style.opacity = 0;
-      music.volume = 0.9;
+      music.volume = 0.85;
       index++;
-      setTimeout(showLine, 2200); // gentle pause
+      setTimeout(showLine, 3000); // long gentle pause
     };
 
-    setTimeout(() => {
+    setTimeout(()=>{
       speechSynthesis.speak(utter);
-    }, 600);
+    }, 800); // breathing space
   }
 
   showLine();
 }
 
 /* STARS */
-for(let i=0;i<150;i++){
+for(let i=0;i<160;i++){
   const s=document.createElement("div");
   s.className="star";
   const size=Math.random()*3+1;
@@ -259,7 +261,7 @@ for(let i=0;i<150;i++){
   s.style.height=size+"px";
   s.style.top=Math.random()*100+"%";
   s.style.left=Math.random()*100+"%";
-  s.style.animationDuration=(Math.random()*2+1)+"s";
+  s.style.animationDuration=(Math.random()*3+2)+"s";
   main.appendChild(s);
 }
 </script>
