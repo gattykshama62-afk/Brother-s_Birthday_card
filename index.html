@@ -27,15 +27,28 @@
   text-align:center;
 }
 
-#hello{ font-size:42px; }
-#subtitle{ font-size:18px; opacity:0.8; margin:10px 0 20px; }
+#hello{
+  font-size:42px;
+}
 
+#subtitle{
+  font-size:18px;
+  opacity:0.8;
+  margin:10px 0 20px;
+}
+
+/* Timer */
 #timer{
   font-size:64px;
   animation:pulse 1s infinite;
 }
-@keyframes pulse{ from{opacity:.5} to{opacity:1} }
 
+@keyframes pulse{
+  from{opacity:0.5}
+  to{opacity:1}
+}
+
+/* Button */
 #startBtn{
   display:none;
   padding:14px 40px;
@@ -44,80 +57,61 @@
   border-radius:30px;
   background:linear-gradient(135deg,#dcdcdc,#ffffff);
   cursor:pointer;
-  box-shadow:0 0 20px rgba(255,255,255,.6);
+  box-shadow:0 0 20px rgba(255,255,255,0.6);
 }
 
 /* MAIN */
 #main{
   display:none;
+  height:100vh;
+  overflow:hidden;
+}
+
+video{
   position:fixed;
   inset:0;
-  overflow:hidden;
-}
-
-/* YOUTUBE BACKGROUND */
-.video-bg{
-  position:fixed;
-  top:0;
-  left:0;
   width:100%;
   height:100%;
-  overflow:hidden;
+  object-fit:cover;
   z-index:-2;
-}
-
-.video-wrapper{
-  position:absolute;
-  top:50%;
-  left:50%;
-  width:177.78vh;
-  height:100vh;
-  transform:translate(-50%, -50%);
-}
-
-.video-wrapper iframe{
-  position:absolute;
-  top:0;
-  left:0;
-  width:100%;
-  height:100%;
-  pointer-events:none;
-  min-width:100%;
-  min-height:100%;
 }
 
 .overlay{
   position:fixed;
   inset:0;
-  background:rgba(0,0,0,.55);
+  background:rgba(0,0,0,0.55);
   z-index:-1;
 }
 
-/* POEM */
+/* POEM TEXT */
 #poem{
   position:absolute;
   top:50%;
   left:50%;
   transform:translate(-50%,-50%);
   width:90%;
-  max-width:850px;
+  max-width:900px;
   text-align:center;
   color:#f5f5f5;
   font-size:30px;
-  line-height:1.6;
+  line-height:1.7;
   opacity:0;
-  transition:opacity 1.2s ease;
-  text-shadow:0 0 20px rgba(255,255,255,.5);
+  transition:opacity 1.4s ease;
+  text-shadow:0 0 18px rgba(255,255,255,0.45);
 }
 
-/* STARS */
+/* Stars */
 .star{
   position:absolute;
   background:white;
   border-radius:50%;
   animation:twinkle 2s infinite alternate;
 }
-@keyframes twinkle{ from{opacity:.3} to{opacity:1} }
+
+@keyframes twinkle{
+  from{opacity:0.3}
+  to{opacity:1}
+}
 </style>
 </head>
 
@@ -126,24 +120,16 @@
 <!-- INTRO -->
 <div id="intro">
   <div id="hello">Hello Bro ⭐</div>
-  <div id="subtitle">A quiet gift from Stars</div>
+  <div id="subtitle">A quiet gift from Stars ✨</div>
   <div id="timer">3</div>
   <button id="startBtn" onclick="startMagic()">Tap</button>
 </div>
 
 <!-- MAIN -->
 <div id="main">
-  <div class="video-bg">
-    <div class="video-wrapper">
-      <iframe
-        src="https://www.youtube.com/embed/sK8oJn1jKAw?autoplay=1&mute=1&loop=1&playlist=sK8oJn1jKAw&controls=0&modestbranding=1&playsinline=1"
-        frameborder="0"
-        allow="autoplay; fullscreen"
-        allowfullscreen>
-      </iframe>
-    </div>
-  </div>
-
+  <video autoplay muted loop playsinline>
+    <source src="background.mp4" type="video/mp4">
+  </video>
   <div class="overlay"></div>
   <div id="poem"></div>
 </div>
@@ -154,30 +140,37 @@ const lines = [
   "Long ago, in the vast expanse of the cosmos,",
   "a fragile planet spun alone beneath violent skies.",
   "Storms raged, meteors threatened, darkness crept in.",
-  "Yet unseen, a guardian bent its path for safety.",
+  "Yet unseen, guardians bent their paths for its safety.",
   "As comets struck, he absorbed the blows.",
   "As chaos grew, he became my gravity.",
   "When darkness came, he shone like a constellation.",
   "That planet is me.",
-  "And you, my chosen brother, my universe of protection.",
-  "Happy Birthday to you, my universe’s shield.",
-  "Stay happy, be successful, and may your dreams find you.",
-  "A brother, not by blood, but by the stars."
+  "And you… my chosen brother, my universe of protection.",
+  "Happy Birthday to you, my universe’s shield. 🤍",
+  "Stay happy, be successful, and may your dreams find you. ✨"
 ];
 
 const poemDiv = document.getElementById("poem");
+const intro = document.getElementById("intro");
+const main = document.getElementById("main");
+
+/* REMOVE EMOJIS FOR VOICE */
+function removeEmojis(text){
+  return text.replace(
+    /([\u2700-\u27BF]|[\uE000-\uF8FF]|[\uD83C-\uDBFF\uDC00-\uDFFF])/g,
+    ""
+  );
+}
 
 /* TIMER */
-let count=3;
-const timer=document.getElementById("timer");
-const btn=document.getElementById("startBtn");
-const intro=document.getElementById("intro");
-const main=document.getElementById("main");
+let count = 3;
+const timer = document.getElementById("timer");
+const btn = document.getElementById("startBtn");
 
-const t=setInterval(()=>{
+const t = setInterval(()=>{
   count--;
-  timer.innerText=count;
-  if(count===0){
+  timer.innerText = count;
+  if(count === 0){
     clearInterval(t);
     timer.style.display="none";
     btn.style.display="inline-block";
@@ -185,54 +178,62 @@ const t=setInterval(()=>{
 },1000);
 
 /* MUSIC */
-const music=new Audio("bgmusic.mp3");
-music.loop=true;
-music.volume=0.3; // Lower initial volume
+const music = new Audio("bgmusic.mp3");
+music.loop = true;
+music.volume = 0.9;
 
 /* FEMALE VOICE */
 let femaleVoice=null;
 speechSynthesis.onvoiceschanged=()=>{
-  femaleVoice=speechSynthesis.getVoices()
-    .find(v=>v.lang.startsWith("en") && v.name.toLowerCase().includes("female"))
-    || speechSynthesis.getVoices().find(v=>v.lang.startsWith("en"));
+  femaleVoice =
+    speechSynthesis.getVoices().find(v =>
+      v.lang.includes("en") &&
+      (v.name.toLowerCase().includes("female") ||
+       v.name.toLowerCase().includes("google"))
+    ) || speechSynthesis.getVoices().find(v=>v.lang.includes("en"));
 };
 
 function startMagic(){
   intro.style.display="none";
   main.style.display="block";
-  // Music starts after tap
   music.play().catch(()=>{});
   playPoem();
 }
 
 /* CINEMATIC POEM */
 function playPoem(){
-  let i=0;
+  let index = 0;
+
   function showLine(){
-    if(i>=lines.length) return;
-    poemDiv.innerText=lines[i];
-    poemDiv.style.opacity=1;
+    if(index >= lines.length) return;
 
-    const u=new SpeechSynthesisUtterance(lines[i]);
-    u.voice=femaleVoice;
-    u.rate=0.9;
-    u.pitch=1.0;
-    u.volume=0.6; // Medium volume
+    poemDiv.innerText = lines[index];
+    poemDiv.style.opacity = 1;
 
-    u.onstart=()=>music.volume=0.15; // Lower music during speech
-    u.onend=()=>{
-      poemDiv.style.opacity=0;
-      music.volume=0.3; // Restore music volume
-      i++;
-      setTimeout(showLine,1200);
+    const cleanText = removeEmojis(lines[index]);
+    const utter = new SpeechSynthesisUtterance(cleanText);
+
+    utter.voice = femaleVoice;
+    utter.rate = 0.85;
+    utter.pitch = 1.15;
+
+    utter.onstart = ()=> music.volume = 0.6;
+
+    utter.onend = ()=>{
+      poemDiv.style.opacity = 0;
+      music.volume = 0.9;
+      index++;
+      setTimeout(showLine, 1400);
     };
-    speechSynthesis.speak(u);
+
+    speechSynthesis.speak(utter);
   }
+
   showLine();
 }
 
 /* STARS */
-for(let i=0;i<160;i++){
+for(let i=0;i<150;i++){
   const s=document.createElement("div");
   s.className="star";
   const size=Math.random()*3+1;
